@@ -71,6 +71,38 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
         }
+
+        .video-container {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .video-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 25px 50px rgba(255, 107, 157, 0.3);
+        }
+
+        .video-overlay {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        video:not([paused]) ~ .video-overlay,
+        video[playing] ~ .video-overlay {
+            opacity: 0;
+        }
+
+        video {
+            background: #000;
+        }
+
+        /* Custom video controls styling */
+        video::-webkit-media-controls-panel {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(255,107,157,0.2));
+        }
+
+        video::-webkit-media-controls-play-button {
+            filter: brightness(1.2);
+        }
     </style>
 </head>
 <body class="bg-black text-white overflow-x-hidden">
@@ -88,29 +120,63 @@
     </div>
 
     <!-- Hero Section -->
-    <div class="relative min-h-screen flex items-center justify-center px-4">
-        <div class="text-center z-10">
-            <!-- Water Pistol Emoji -->
-            <div class="text-8xl mb-8 water-drop">💦</div>
+    <div class="relative min-h-screen flex items-center justify-center px-4 py-20">
+        <div class="max-w-7xl mx-auto w-full z-10">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Left Column: Text Content -->
+                <div class="text-center lg:text-left">
+                    <!-- Water Pistol Emoji -->
+                    <div class="text-8xl mb-8 water-drop">💦</div>
 
-            <h1 class="text-7xl md:text-9xl font-black mb-6 neon-glow gradient-text">
-                KISS
-            </h1>
+                    <h1 class="text-7xl md:text-9xl font-black mb-6 neon-glow gradient-text">
+                        KISS
+                    </h1>
 
-            <p class="text-2xl md:text-4xl font-light mb-4 text-pink-300">
-                Shoot First. Kiss Later.
-            </p>
+                    <p class="text-2xl md:text-4xl font-light mb-4 text-pink-300">
+                        Shoot First. Kiss Later.
+                    </p>
 
-            <p class="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-                The most degen stealth game where two players hunt each other in a dark park with water pistols.
-                <span class="text-pink-400">Only the wettest survive.</span>
-            </p>
+                    <p class="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl lg:max-w-none">
+                        The most degen stealth game where two players hunt each other in a dark park with water pistols.
+                        <span class="text-pink-400">Only the wettest survive.</span>
+                    </p>
 
-            <button class="btn-primary text-white font-bold text-xl px-12 py-4 rounded-full shadow-2xl">
-                PLAY NOW 🎮
-            </button>
+                    <button class="btn-primary text-white font-bold text-xl px-12 py-4 rounded-full shadow-2xl">
+                        PLAY NOW 🎮
+                    </button>
 
-            <p class="text-sm text-gray-500 mt-4">No wallet needed. Just vibes.</p>
+                    <p class="text-sm text-gray-500 mt-4">No wallet needed. Just vibes.</p>
+                </div>
+
+                <!-- Right Column: Video Player -->
+                <div class="relative">
+                    <div class="video-container relative rounded-2xl overflow-hidden border-4 border-pink-500/30 shadow-2xl">
+                        <video
+                            class="w-full h-auto rounded-xl"
+                            controls
+                            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect fill='%23111' width='800' height='450'/%3E%3Ctext fill='%23FF6B9D' font-size='48' font-family='Arial' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3E🎮 Game Preview 🎮%3C/text%3E%3C/svg%3E"
+                            loop
+                            preload="metadata"
+                        >
+                            <source src="game-preview.mp4" type="video/mp4">
+                            <source src="game-preview.webm" type="video/webm">
+                            Your browser does not support the video tag.
+                        </video>
+
+                        <!-- Play Button Overlay (appears when paused) -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none video-overlay">
+                            <div class="bg-pink-500/20 backdrop-blur-sm rounded-full p-6">
+                                <svg class="w-16 h-16 text-pink-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Decorative Glow -->
+                    <div class="absolute -inset-4 bg-gradient-to-r from-pink-500/20 to-purple-500/20 blur-3xl -z-10"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -304,6 +370,42 @@
             star.style.left = Math.random() * 100 + '%';
             star.style.animationDelay = Math.random() * 3 + 's';
             starsContainer.appendChild(star);
+        }
+
+        // Video player overlay handling
+        const video = document.querySelector('video');
+        const videoOverlay = document.querySelector('.video-overlay');
+
+        if (video && videoOverlay) {
+            // Hide overlay when video is playing
+            video.addEventListener('play', () => {
+                videoOverlay.style.opacity = '0';
+            });
+
+            // Show overlay when video is paused
+            video.addEventListener('pause', () => {
+                videoOverlay.style.opacity = '1';
+            });
+
+            // Hide overlay when video ends
+            video.addEventListener('ended', () => {
+                videoOverlay.style.opacity = '1';
+            });
+
+            // Click overlay to play video
+            videoOverlay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                video.play();
+            });
+
+            // Add playing class for CSS
+            video.addEventListener('play', () => {
+                video.setAttribute('playing', 'true');
+            });
+
+            video.addEventListener('pause', () => {
+                video.removeAttribute('playing');
+            });
         }
     </script>
 </body>
